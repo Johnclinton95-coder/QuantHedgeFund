@@ -52,6 +52,15 @@ class TradingApp:
         
         self._connected = False
         self._ib = None
+        self._halted = False  # Critical safety flag
+        
+        # Telemetry & Metrics
+        self.metrics = {
+            "last_tick_time": None,
+            "last_order_time": None,
+            "order_latencies": [],
+            "daily_pnl_initial_value": None
+        }
         
         logger.info(
             f"TradingApp initialized: {self.host}:{self.port} "
@@ -101,6 +110,20 @@ class TradingApp:
     def is_connected(self) -> bool:
         """Check if connected to IB."""
         return self._connected and self._ib and self._ib.isConnected()
+
+    def halt(self) -> None:
+        """Emergency halt all trading activity."""
+        self._halted = True
+        logger.warning("TRADING HALTED: Manual emergency halt triggered.")
+
+    def resume(self) -> None:
+        """Resume trading activity after halt."""
+        self._halted = False
+        logger.info("TRADING RESUMED: Manual resume triggered.")
+
+    def is_halted(self) -> bool:
+        """Check if system is currently halted."""
+        return self._halted
     
     # =====================
     # Account Information
@@ -201,6 +224,50 @@ class TradingApp:
         from ib_insync import Stock
         
         return Stock(symbol, exchange, "USD")
+
+    def _validate_risk(self, symbol: str, shares: int, current_price: float, side: str) -> bool:
+        """
+        Internal pre-trade risk validation.
+        
+        Checks:
+        1. System halt state
+        2. Max symbol exposure
+        3. Portfolio leverage
+        4. (Placeholder) Daily loss limit
+        
+        Returns:
+            True if trade is safe to proceed
+        """
+        if self._halted:
+            logger.error(f"RISK REJECTED: System is HALTED. Cannot {side} {symbol}.")
+            return False
+
+        settings = get_settings()
+        portfolio_value = self.get_portfolio_value()
+        order_value = abs(shares * current_price)
+        
+        # 1. Individual Symbol Exposure
+        current_pos = self.get_position(symbol)
+        current_pos_value = current_pos["market_value"] if current_pos else 0.0
+        new_pos_value = current_pos_value + (order_value if side == "BUY" else -order_value)
+        
+        exposure_pct = abs(new_pos_value) / portfolio_value
+        if exposure_pct > settings.max_symbol_exposure_pct:
+            logger.error(f"RISK REJECTED: {symbol} exposure would be {exposure_pct:.1%}, exceeds limit of {settings.max_symbol_exposure_pct:.1%}")
+            return False
+
+        # 2. Leverage Check
+        # Gross position value = total value of all positions
+        info = self.get_account_info()
+        gross_value = info.get("GrossPositionValue", 0.0)
+        new_gross_value = gross_value + order_value
+        leverage = new_gross_value / portfolio_value
+        
+        if leverage > settings.max_leverage:
+            logger.error(f"RISK REJECTED: Portfolio leverage would be {leverage:.2f}, exceeds limit of {settings.max_leverage}")
+            return False
+
+        return True
     
     def order_target_percent(
         self,
@@ -272,6 +339,13 @@ class TradingApp:
         action = "BUY" if shares > 0 else "SELL"
         shares = abs(shares)
         
+        # --- Pre-Trade Risk Gate ---
+        import time
+        start_time = time.time()
+        
+        if not self._validate_risk(symbol, shares, current_price, action):
+            return None
+            
         # Create order (Adaptive LMT preferred for production)
         if order_type.upper() == "MKT":
             logger.warning(f"Using MKT order for {symbol} - consider ADAPTIVE for production")
@@ -287,7 +361,12 @@ class TradingApp:
         # Submit order
         trade = self._ib.placeOrder(contract, order)
         
-        logger.info(f"Placed {order_type} {action} order for {shares} shares of {symbol}")
+        # Telemetry
+        latency = (time.time() - start_time) * 1000
+        self.metrics["order_latencies"].append(latency)
+        self.metrics["last_order_time"] = datetime.now()
+        
+        logger.info(f"Placed {order_type} {action} order for {shares} shares of {symbol} (Latency: {latency:.2f}ms)")
         
         return trade
     
@@ -403,3 +482,34 @@ class TradingApp:
             "last": ticker.last or 0.0,
             "volume": ticker.volume or 0,
         }
+
+    def get_health_status(self) -> Dict[str, Any]:
+        """
+        Get system health status for the control plane.
+        """
+        status = {
+            "ib_connected": self.is_connected(),
+            "engine_halted": self._halted,
+            "last_heartbeat": datetime.now().isoformat(),
+            "latency_p50_ms": 0.0,
+            "latency_p99_ms": 0.0,
+        }
+        
+        if self.metrics["order_latencies"]:
+            import numpy as np
+            status["latency_p50_ms"] = float(np.percentile(self.metrics["order_latencies"], 50))
+            status["latency_p99_ms"] = float(np.percentile(self.metrics["order_latencies"], 99))
+            
+        return status
+
+    def flatten_all_positions(self) -> int:
+        """
+        Emergency: Liquidate all positions immediately.
+        """
+        logger.warning("EMERGENCY: Flattening all positions!")
+        positions = self.get_positions()
+        count = 0
+        for pos in positions:
+            self.liquidate_position(pos["symbol"])
+            count += 1
+        return count

@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     # ===================
     # LLM Settings
     # ===================
-    groq_model: str = Field(default="openai/gpt-oss-20b", description="Groq LLM model to use")
+    groq_model: str = Field(default="openai/gpt-oss-120b", description="Groq LLM model to use")
     
     # ===================
     # Database Settings
@@ -66,6 +66,14 @@ class Settings(BaseSettings):
     ib_port: int = Field(default=7497, description="IB Gateway port")
     ib_client_id: int = Field(default=1, description="IB client ID")
     ib_paper_trading: bool = Field(default=True, description="Use paper trading mode")
+    
+    # ===================
+    # Risk Management
+    # ===================
+    max_daily_loss_pct: float = Field(default=0.02, description="Max daily loss as % of portfolio (e.g. 0.02 = 2%)")
+    max_symbol_exposure_pct: float = Field(default=0.20, description="Max exposure per symbol (e.g. 0.20 = 20%)")
+    max_leverage: float = Field(default=1.5, description="Max portfolio leverage")
+    min_order_threshold_usd: float = Field(default=100.0, description="Minimum order size in USD")
     
     # ===================
     # Dashboard Settings
