@@ -215,6 +215,7 @@ flowchart LR
 | **MLflow Integration** | Log 88+ metrics for every backtest run |
 | **Tear Sheets** | Professional reports for returns, factors, transactions |
 | **XGBoost Integration** | Machine learning enhanced factor strategies |
+| **LLM Strategy Generator** | AI-powered regime analysis and parameter tuning via Groq |
 
 ### Execution Layer (Omega)
 
@@ -827,6 +828,43 @@ class TradingApp:
  def get_open_orders() -> List[Dict]
  def cancel_all_orders() -> int
 ```
+
+---
+
+## LLM Strategy Generator
+
+The system includes an **AI-powered research assistant** (`qsresearch/llm/`) that uses Groq's `openai/gpt-oss-20b` model to:
+
+- **Analyze Market Regimes**: Calculate volatility, trend strength, and returns to classify the market (Bull Steady, Bull Volatile, Bear, Sideways).
+- **Generate Strategy Parameters**: Prompt the LLM for optimal factor weights and lookback periods based on the current regime.
+- **Multi-Candidate Search**: Generate N distinct strategy variations (Balanced, Aggressive, Defensive) and rank them.
+- **Validation**: All LLM outputs are validated against strict constraints before use.
+
+```python
+from qsresearch.llm import StrategyGenerator
+
+generator = StrategyGenerator()
+candidates = generator.generate_candidates(prices, n=3)
+
+# Each candidate is validated and ready for backtesting
+for c in candidates:
+    print(c['style'], c['factor_weights'])
+```
+
+> ⚠️ **Important**: The LLM is used **offline** for research and parameter tuning—NOT in the low-latency execution path.
+
+---
+
+## Pre-Live Checklist
+
+Before enabling live trading, complete the mandatory safety checks in `docs/PRE_LIVE_CHECKLIST.md`:
+
+1.  **Paper Trading**: Full day validation of order lifecycle.
+2.  **Latency Benchmarking**: P50/P95/P99 for all execution hops.
+3.  **Risk-Trigger Testing**: Verify loss limits and kill switches.
+4.  **Failure-Mode Testing**: Simulate disconnects, stale data, and rejects.
+
+> ⚠️ Skipping these steps means accepting **undefined behavior with real money**.
 
 ---
 

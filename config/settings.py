@@ -28,6 +28,12 @@ class Settings(BaseSettings):
     fmp_api_key: str = Field(default="", description="Financial Modeling Prep API key")
     datalink_api_key: str = Field(default="", description="Datalink API key")
     openai_api_key: str = Field(default="", description="OpenAI API key for AI assistant")
+    groq_api_key: str = Field(default="", description="Groq API key for LLM features")
+    
+    # ===================
+    # LLM Settings
+    # ===================
+    groq_model: str = Field(default="openai/gpt-oss-20b", description="Groq LLM model to use")
     
     # ===================
     # Database Settings

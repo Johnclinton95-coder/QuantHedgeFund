@@ -1099,6 +1099,41 @@ config = {
 
 ---
 
+## 13. LLM Strategy Generator
+
+The system includes an AI-powered research assistant that uses Groq's LLM for offline strategy generation.
+
+**Key Features:**
+- **Regime Analysis**: Classifies market as Bull Steady, Bull Volatile, Bear, or Sideways.
+- **Multi-Candidate Generation**: Produces N distinct strategy variations (Balanced, Aggressive, Defensive).
+- **Validation**: All LLM outputs are validated against strict constraints.
+- **MLflow Logging**: Every generated candidate is logged for reproducibility.
+
+```python
+from qsresearch.llm import StrategyGenerator
+
+generator = StrategyGenerator()
+candidates = generator.generate_candidates(prices, n=3)
+best = max(candidates, key=lambda c: run_backtest(c)['sharpe'])
+```
+
+> ⚠️ The LLM is used **offline** for research—NOT in execution paths.
+
+---
+
+## 14. Pre-Live Checklist
+
+Before enabling live trading, complete `docs/PRE_LIVE_CHECKLIST.md`:
+
+1. **Paper Trading**: Validate order lifecycle (Order → Ack → Fill).
+2. **Latency Benchmarking**: Measure P50/P95/P99 for all hops.
+3. **Risk-Trigger Testing**: Verify loss limits and kill switches work.
+4. **Failure-Mode Testing**: Simulate disconnects, stale data, rejects.
+
+> ⚠️ Skipping these steps means accepting **undefined behavior with real money**.
+
+---
+
 ## Conclusion
 
 This documentation covered the complete Quant Hedge Fund system:

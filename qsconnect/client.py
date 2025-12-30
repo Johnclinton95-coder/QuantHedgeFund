@@ -169,8 +169,9 @@ class Client:
         if use_cache and prices is not None:
             self._cache_manager.set(cache_key, prices)
         
-        # Store in database
-        self._db_manager.upsert_prices(prices)
+        # Store in database (only if we have data)
+        if prices is not None and not prices.is_empty():
+            self._db_manager.upsert_prices(prices)
         
         return prices
     

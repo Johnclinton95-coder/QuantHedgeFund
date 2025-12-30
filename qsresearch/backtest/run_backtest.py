@@ -76,7 +76,9 @@ def run_backtest(
         mlflow.set_experiment(experiment_name)
         
         run_name = config.get("run_name", f"backtest_{datetime.now().strftime('%Y-%m-%d_%H%M%S')}")
-        mlflow.start_run(run_name=run_name)
+        
+        # Use nested=True to support batch runs and parameter sweeps
+        mlflow.start_run(run_name=run_name, nested=True)
         
         # Log parameters
         _log_params_to_mlflow(config)

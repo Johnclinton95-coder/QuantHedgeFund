@@ -147,15 +147,28 @@ class TradingApp:
         positions = []
         
         for pos in self._ib.positions():
-            # Note: market_value uses avgCost as approximation
-            # For accurate market value, use get_quote() to get current price
             avg_cost = pos.avgCost if pos.avgCost else 0.0
+            quantity = pos.position
+            
+            # Get current market price for accurate valuation
+            try:
+                contract = pos.contract
+                ticker = self._ib.reqMktData(contract, snapshot=True)
+                self._ib.sleep(0.5)  # Brief wait for snapshot
+                current_price = ticker.marketPrice() if ticker.marketPrice() else avg_cost
+                self._ib.cancelMktData(contract)
+            except Exception:
+                current_price = avg_cost  # Fallback to avg_cost if price unavailable
+                logger.warning(f"Could not get market price for {pos.contract.symbol}, using avg_cost")
+            
             positions.append({
                 "symbol": pos.contract.symbol,
-                "quantity": pos.position,
+                "quantity": quantity,
                 "avg_cost": avg_cost,
-                "cost_basis": pos.position * avg_cost,
-                "market_value": pos.position * avg_cost,  # TODO: multiply by current price for accuracy
+                "current_price": current_price,
+                "cost_basis": quantity * avg_cost,
+                "market_value": quantity * current_price,
+                "unrealized_pnl": quantity * (current_price - avg_cost),
                 "contract": pos.contract,
             })
         
@@ -193,7 +206,7 @@ class TradingApp:
         self,
         symbol: str,
         target_percent: float,
-        order_type: str = "MKT",
+        order_type: str = "ADAPTIVE",  # Changed from MKT for safety
     ) -> Optional[Any]:
         """
         Place order to reach target portfolio percentage.
@@ -203,7 +216,7 @@ class TradingApp:
         Args:
             symbol: Stock symbol
             target_percent: Target allocation (0.0 to 1.0)
-            order_type: Order type (MKT, LMT)
+            order_type: Order type (ADAPTIVE, LMT, MKT - use MKT with caution)
             
         Returns:
             Order trade object
@@ -232,12 +245,19 @@ class TradingApp:
         
         # Get current price for share calculation
         contract = self.create_contract(symbol)
-        ticker = self._ib.reqMktData(contract)
-        self._ib.sleep(1)  # Wait for price
+        ticker = self._ib.reqMktData(contract, snapshot=True)
         
-        if ticker.marketPrice():
-            current_price = ticker.marketPrice()
-        else:
+        # Event-driven wait with timeout (non-blocking pattern)
+        max_wait = 2.0  # seconds
+        waited = 0.0
+        while ticker.marketPrice() is None and waited < max_wait:
+            self._ib.sleep(0.1)
+            waited += 0.1
+        
+        current_price = ticker.marketPrice()
+        self._ib.cancelMktData(contract)  # Clean up subscription
+        
+        if not current_price or current_price <= 0:
             logger.warning(f"Could not get price for {symbol}")
             return None
         
@@ -252,16 +272,22 @@ class TradingApp:
         action = "BUY" if shares > 0 else "SELL"
         shares = abs(shares)
         
-        # Create order
+        # Create order (Adaptive LMT preferred for production)
         if order_type.upper() == "MKT":
+            logger.warning(f"Using MKT order for {symbol} - consider ADAPTIVE for production")
             order = MarketOrder(action, shares)
+        elif order_type.upper() == "ADAPTIVE":
+            # Adaptive algo order - best for production
+            order = LimitOrder(action, shares, current_price)
+            order.algoStrategy = "Adaptive"
+            order.algoParams = [("adaptivePriority", "Normal")]
         else:
             order = LimitOrder(action, shares, current_price)
         
         # Submit order
         trade = self._ib.placeOrder(contract, order)
         
-        logger.info(f"Placed {action} order for {shares} shares of {symbol}")
+        logger.info(f"Placed {order_type} {action} order for {shares} shares of {symbol}")
         
         return trade
     

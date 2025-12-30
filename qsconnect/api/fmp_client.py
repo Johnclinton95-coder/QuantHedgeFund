@@ -302,14 +302,17 @@ class FMPClient(BaseAPIClient):
             ):
                 cache_key = f"bulk-{statement_type}_{year}_{period}"
                 
-                # Use bulk endpoint
-                endpoint = f"income-statement-bulk"
-                if statement_type == "balance-sheet-statement":
+                # Use bulk endpoint - dynamically based on statement_type
+                if statement_type == "income-statement":
+                    endpoint = "income-statement-bulk"
+                elif statement_type == "balance-sheet-statement":
                     endpoint = "balance-sheet-statement-bulk"
                 elif statement_type == "cash-flow-statement":
                     endpoint = "cash-flow-statement-bulk"
                 elif statement_type == "ratios":
                     endpoint = "ratios-bulk"
+                else:
+                    endpoint = f"{statement_type}-bulk"  # Fallback
                 
                 params = {"year": year, "period": period}
                 data = self._make_request(endpoint, params=params)
