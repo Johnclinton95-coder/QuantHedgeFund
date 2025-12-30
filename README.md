@@ -13,7 +13,8 @@
  <strong>A complete Python-powered algorithmic trading system for building and running your own quant hedge fund</strong>
 </p>
 
-<img width="2816" height="1536" alt="Gemini_Generated_Image_wl6okgwl6okgwl6o" src="https://github.com/user-attachments/assets/b3110e96-2c56-4400-9834-dad1e46e58db" />
+<img width="1918" height="1065" alt="image" src="https://github.com/user-attachments/assets/fc2990a4-3c75-44a4-95f4-f5f08e8e7923" />
+
 
 
 
@@ -935,6 +936,7 @@ Algorithmic trading involves substantial risk of loss. You could lose some or al
 Proprietary - All Rights Reserved
 
 ---
+
 
 
 
