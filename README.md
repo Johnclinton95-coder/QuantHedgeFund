@@ -1,16 +1,16 @@
 # 🏦 Quant Hedge Fund System
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python"/>
-  <img src="https://img.shields.io/badge/DuckDB-FFF000?style=for-the-badge&logo=duckdb&logoColor=black" alt="DuckDB"/>
-  <img src="https://img.shields.io/badge/MLflow-0194E2?style=for-the-badge&logo=mlflow&logoColor=white" alt="MLflow"/>
-  <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Streamlit"/>
-  <img src="https://img.shields.io/badge/Prefect-024DFD?style=for-the-badge&logo=prefect&logoColor=white" alt="Prefect"/>
-  <img src="https://img.shields.io/badge/Interactive_Brokers-CC0000?style=for-the-badge" alt="IB"/>
+ <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python"/>
+ <img src="https://img.shields.io/badge/DuckDB-FFF000?style=for-the-badge&logo=duckdb&logoColor=black" alt="DuckDB"/>
+ <img src="https://img.shields.io/badge/MLflow-0194E2?style=for-the-badge&logo=mlflow&logoColor=white" alt="MLflow"/>
+ <img src="https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white" alt="Streamlit"/>
+ <img src="https://img.shields.io/badge/Prefect-024DFD?style=for-the-badge&logo=prefect&logoColor=white" alt="Prefect"/>
+ <img src="https://img.shields.io/badge/Interactive_Brokers-CC0000?style=for-the-badge" alt="IB"/>
 </p>
 
 <p align="center">
-  <strong>A complete Python-powered algorithmic trading system for building and running your own quant hedge fund</strong>
+ <strong>A complete Python-powered algorithmic trading system for building and running your own quant hedge fund</strong>
 </p>
 
 ---
@@ -71,75 +71,75 @@ The system follows a **layered architecture** with clear separation of concerns:
 
 ```mermaid
 graph TB
-    subgraph Monitoring["📊 MONITORING LAYER"]
-        Dashboard["Streamlit Dashboard"]
-        MLflowUI["MLflow UI"]
-    end
+ subgraph Monitoring["📊 MONITORING LAYER"]
+ Dashboard["Streamlit Dashboard"]
+ MLflowUI["MLflow UI"]
+ end
 
-    subgraph Orchestration["⚙️ ORCHESTRATION LAYER"]
-        Luigi["Luigi<br/>(Development)"]
-        Prefect["Prefect<br/>(Production)"]
-    end
+ subgraph Orchestration["⚙️ ORCHESTRATION LAYER"]
+ Luigi["Luigi<br/>(Development)"]
+ Prefect["Prefect<br/>(Production)"]
+ end
 
-    subgraph Core["🔧 CORE LAYERS"]
-        subgraph Data["DATA LAYER<br/>(QS Connect)"]
-            FMP["FMP API"]
-            DuckDB["DuckDB"]
-            Cache["Parquet Cache"]
-            Bundle["Zipline Bundler"]
-        end
+ subgraph Core["🔧 CORE LAYERS"]
+ subgraph Data["DATA LAYER<br/>(QS Connect)"]
+ FMP["FMP API"]
+ DuckDB["DuckDB"]
+ Cache["Parquet Cache"]
+ Bundle["Zipline Bundler"]
+ end
 
-        subgraph Research["RESEARCH LAYER<br/>(QS Research)"]
-            Factors["Factor Engine"]
-            Backtest["Backtester"]
-            MLflow["MLflow Tracking"]
-            Strategies["Strategies"]
-        end
+ subgraph Research["RESEARCH LAYER<br/>(QS Research)"]
+ Factors["Factor Engine"]
+ Backtest["Backtester"]
+ MLflow["MLflow Tracking"]
+ Strategies["Strategies"]
+ end
 
-        subgraph Execution["EXECUTION LAYER<br/>(Omega)"]
-            IB["IB API"]
-            Orders["Order Management"]
-            Positions["Positions"]
-            Risk["Risk Controls"]
-        end
-    end
+ subgraph Execution["EXECUTION LAYER<br/>(Omega)"]
+ IB["IB API"]
+ Orders["Order Management"]
+ Positions["Positions"]
+ Risk["Risk Controls"]
+ end
+ end
 
-    Dashboard --> Backtest
-    MLflowUI --> MLflow
-    Luigi --> Data
-    Luigi --> Research
-    Luigi --> Execution
-    Prefect --> Data
-    Prefect --> Research
-    Prefect --> Execution
-    Data <--> Research
-    Research --> Execution
+ Dashboard --> Backtest
+ MLflowUI --> MLflow
+ Luigi --> Data
+ Luigi --> Research
+ Luigi --> Execution
+ Prefect --> Data
+ Prefect --> Research
+ Prefect --> Execution
+ Data <--> Research
+ Research --> Execution
 
-    style Dashboard fill:#FF4B4B,color:#fff
-    style MLflowUI fill:#0194E2,color:#fff
-    style Luigi fill:#1f77b4,color:#fff
-    style Prefect fill:#024DFD,color:#fff
-    style DuckDB fill:#FFF000,color:#000
-    style MLflow fill:#0194E2,color:#fff
-    style IB fill:#CC0000,color:#fff
+ style Dashboard fill:#FF4B4B,color:#fff
+ style MLflowUI fill:#0194E2,color:#fff
+ style Luigi fill:#1f77b4,color:#fff
+ style Prefect fill:#024DFD,color:#fff
+ style DuckDB fill:#FFF000,color:#000
+ style MLflow fill:#0194E2,color:#fff
+ style IB fill:#CC0000,color:#fff
 ```
 
 ### Data Flow
 
 ```mermaid
 flowchart LR
-    A[("🌐 FMP API")] --> B[("📁 Parquet Cache")]
-    B --> C[("🦆 DuckDB")]
-    C --> D[("📦 Zipline Bundle")]
-    D --> E[("🔬 Backtest")]
-    E --> F[("📊 MLflow")]
-    F --> G[("Ω Omega")]
-    G --> H[("🏦 Interactive Brokers")]
+ A[("🌐 FMP API")] --> B[("📁 Parquet Cache")]
+ B --> C[("🦆 DuckDB")]
+ C --> D[("📦 Zipline Bundle")]
+ D --> E[("🔬 Backtest")]
+ E --> F[("📊 MLflow")]
+ F --> G[(" Omega")]
+ G --> H[("🏦 Interactive Brokers")]
 
-    style A fill:#1f77b4,color:#fff
-    style C fill:#FFF000,color:#000
-    style F fill:#0194E2,color:#fff
-    style H fill:#CC0000,color:#fff
+ style A fill:#1f77b4,color:#fff
+ style C fill:#FFF000,color:#000
+ style F fill:#0194E2,color:#fff
+ style H fill:#CC0000,color:#fff
 ```
 
 1. **FMP API**: Financial Modeling Prep provides market and fundamental data
@@ -214,79 +214,79 @@ flowchart LR
 ```
 QuantHedgeFund/
 │
-├── config/                          # Configuration and settings
-│   ├── __init__.py                  # Module exports
-│   ├── settings.py                  # Pydantic settings management
-│   ├── constants.py                 # Enums and default parameters
-│   └── logging_config.py            # Loguru logging setup
+├── config/ # Configuration and settings
+│ ├── __init__.py # Module exports
+│ ├── settings.py # Pydantic settings management
+│ ├── constants.py # Enums and default parameters
+│ └── logging_config.py # Loguru logging setup
 │
-├── qsconnect/                       # DATA LAYER
-│   ├── __init__.py                  # Main Client import
-│   ├── client.py                    # ⭐ Primary data interface
-│   ├── api/
-│   │   ├── base_client.py           # Rate-limited HTTP client
-│   │   └── fmp_client.py            # FMP API implementation
-│   ├── database/
-│   │   └── duckdb_manager.py        # ⭐ Database operations
-│   ├── cache/
-│   │   └── cache_manager.py         # Parquet caching
-│   ├── bundle/
-│   │   └── zipline_bundler.py       # Zipline bundle creation
-│   └── utils/
-│       └── paths.py                 # Path utilities
+├── qsconnect/ # DATA LAYER
+│ ├── __init__.py # Main Client import
+│ ├── client.py # ⭐ Primary data interface
+│ ├── api/
+│ │ ├── base_client.py # Rate-limited HTTP client
+│ │ └── fmp_client.py # FMP API implementation
+│ ├── database/
+│ │ └── duckdb_manager.py # ⭐ Database operations
+│ ├── cache/
+│ │ └── cache_manager.py # Parquet caching
+│ ├── bundle/
+│ │ └── zipline_bundler.py # Zipline bundle creation
+│ └── utils/
+│ └── paths.py # Path utilities
 │
-├── qsresearch/                      # RESEARCH LAYER
-│   ├── __init__.py
-│   ├── features/
-│   │   ├── momentum.py              # ⭐ QSMOM factor
-│   │   ├── forward_returns.py       # ML target creation
-│   │   ├── factor_engine.py         # Factor computation engine
-│   │   └── technical_indicators.py  # pandas-ta integration
-│   ├── preprocessors/
-│   │   ├── price_preprocessor.py    # Data cleaning
-│   │   └── universe_screener.py     # Stock filtering
-│   ├── backtest/
-│   │   ├── run_backtest.py          # ⭐ Main backtest runner
-│   │   ├── parameter_sweep.py       # Iterative sweeps
-│   │   └── strategy_artifacts.py    # Manifest generation
-│   ├── portfolio_analysis/
-│   │   ├── performance_metrics.py   # ⭐ 88+ metrics
-│   │   └── tear_sheets.py           # HTML reports
-│   └── strategies/
-│       └── factor/
-│           ├── algorithms.py        # Signal generation
-│           └── config.py            # ⭐ Strategy configs
+├── qsresearch/ # RESEARCH LAYER
+│ ├── __init__.py
+│ ├── features/
+│ │ ├── momentum.py # ⭐ QSMOM factor
+│ │ ├── forward_returns.py # ML target creation
+│ │ ├── factor_engine.py # Factor computation engine
+│ │ └── technical_indicators.py # pandas-ta integration
+│ ├── preprocessors/
+│ │ ├── price_preprocessor.py # Data cleaning
+│ │ └── universe_screener.py # Stock filtering
+│ ├── backtest/
+│ │ ├── run_backtest.py # ⭐ Main backtest runner
+│ │ ├── parameter_sweep.py # Iterative sweeps
+│ │ └── strategy_artifacts.py # Manifest generation
+│ ├── portfolio_analysis/
+│ │ ├── performance_metrics.py # ⭐ 88+ metrics
+│ │ └── tear_sheets.py # HTML reports
+│ └── strategies/
+│ └── factor/
+│ ├── algorithms.py # Signal generation
+│ └── config.py # ⭐ Strategy configs
 │
-├── omega/                           # EXECUTION LAYER
-│   ├── __init__.py
-│   ├── trading_app.py               # ⭐ IB trading interface
-│   └── utils/
-│       └── omega_trades_converter.py
+├── omega/ # EXECUTION LAYER
+│ ├── __init__.py
+│ ├── trading_app.py # ⭐ IB trading interface
+│ └── utils/
+│ └── omega_trades_converter.py
 │
-├── workflow/                        # LUIGI ORCHESTRATION
-│   ├── dags/
-│   │   └── 01_ingest_data.py        # ⭐ Complete DAG
-│   └── luigi.cfg                    # Luigi configuration
+├── workflow/ # LUIGI ORCHESTRATION
+│ ├── dags/
+│ │ └── 01_ingest_data.py # ⭐ Complete DAG
+│ └── luigi.cfg # Luigi configuration
 │
-├── automation/                      # PREFECT ORCHESTRATION
-│   ├── prefect_flows.py             # ⭐ Production flows
-│   └── deployment_manager.py        # Model promotion
+├── automation/ # PREFECT ORCHESTRATION
+│ ├── prefect_flows.py # ⭐ Production flows
+│ └── deployment_manager.py # Model promotion
 │
-├── dashboard/                       # STREAMLIT UI
-│   └── app.py                       # ⭐ Main dashboard
+├── dashboard/ # STREAMLIT UI
+│ └── app.py # ⭐ Main dashboard
 │
-├── scripts/                         # UTILITIES
-│   ├── setup_database.py            # Initialize DB
-│   ├── download_initial_data.py     # First data download
-│   └── start_dashboard.py           # Launch dashboard
+├── scripts/ # UTILITIES
+│ ├── setup_database.py # Initialize DB
+│ ├── download_initial_data.py # First data download
+│ └── start_dashboard.py # Launch dashboard
 │
-├── .env.example                     # Environment template
-├── .gitignore                       # Git ignore rules
-├── requirements.txt                 # Python dependencies
-├── pyproject.toml                   # Project metadata
-├── README.md                        # This file
+├── .env.example # Environment template
+├── .gitignore # Git ignore rules
+├── requirements.txt # Python dependencies
+├── pyproject.toml # Project metadata
+├── README.md # This file
 └── docs/
-    └── DOCUMENTATION.md             # Detailed documentation
+ └── DOCUMENTATION.md # Detailed documentation
 ```
 
 ---
@@ -407,54 +407,54 @@ Strategies are configured via Python dictionaries. See `qsresearch/strategies/fa
 
 ```python
 MOMENTUM_FACTOR_CONFIG = {
-    # MLflow settings
-    "experiment_name": "Momentum Factor Strategy",
-    "run_name": "qsmom_equal_weight_long_only",
-    
-    # Backtest parameters
-    "bundle_name": "historical_prices_fmp",
-    "start_date": "2015-01-01",
-    "end_date": "2025-02-14",
-    "capital_base": 1_000_000,
-    
-    # Preprocessing pipeline
-    "preprocessing": [
-        {
-            "name": "price_preprocessor",
-            "params": {"min_trading_days": 504}
-        },
-        {
-            "name": "universe_screener",
-            "params": {"volume_top_n": 500}
-        },
-    ],
-    
-    # Factor calculation
-    "factors": [
-        {
-            "name": "momentum_factor",
-            "params": {
-                "fast_period": 21,    # 1 month
-                "slow_period": 252,   # 1 year
-                "signal_period": 126, # 6 months
-            }
-        },
-    ],
-    
-    # Algorithm
-    "algorithm": {
-        "callable": "use_factor_as_signal",
-        "params": {"top_n": 20}
-    },
-    
-    # Portfolio construction
-    "portfolio_strategy": {
-        "func": "long_short_equal_weight_portfolio",
-        "params": {
-            "num_long_positions": 20,
-            "num_short_positions": 0,  # Long only
-        }
-    },
+ # MLflow settings
+ "experiment_name": "Momentum Factor Strategy",
+ "run_name": "qsmom_equal_weight_long_only",
+ 
+ # Backtest parameters
+ "bundle_name": "historical_prices_fmp",
+ "start_date": "2015-01-01",
+ "end_date": "2025-02-14",
+ "capital_base": 1_000_000,
+ 
+ # Preprocessing pipeline
+ "preprocessing": [
+ {
+ "name": "price_preprocessor",
+ "params": {"min_trading_days": 504}
+ },
+ {
+ "name": "universe_screener",
+ "params": {"volume_top_n": 500}
+ },
+ ],
+ 
+ # Factor calculation
+ "factors": [
+ {
+ "name": "momentum_factor",
+ "params": {
+ "fast_period": 21, # 1 month
+ "slow_period": 252, # 1 year
+ "signal_period": 126, # 6 months
+ }
+ },
+ ],
+ 
+ # Algorithm
+ "algorithm": {
+ "callable": "use_factor_as_signal",
+ "params": {"top_n": 20}
+ },
+ 
+ # Portfolio construction
+ "portfolio_strategy": {
+ "func": "long_short_equal_weight_portfolio",
+ "params": {
+ "num_long_positions": 20,
+ "num_short_positions": 0, # Long only
+ }
+ },
 }
 ```
 
@@ -470,7 +470,7 @@ QS Connect is your single source of truth for all market data. It handles:
 ```python
 from qsconnect import Client
 
-client = Client()  # Uses environment variables
+client = Client() # Uses environment variables
 
 # Or pass keys directly
 client = Client(fmp_api_key="your_key")
@@ -480,8 +480,8 @@ client = Client(fmp_api_key="your_key")
 ```python
 # Download bulk historical prices
 prices = client.bulk_historical_prices(
-    start_date=date(2015, 1, 1),
-    end_date=date.today(),
+ start_date=date(2015, 1, 1),
+ end_date=date.today(),
 )
 
 # Data is automatically cached to parquet and stored in DuckDB
@@ -492,15 +492,15 @@ print(f"Downloaded {len(prices)} records")
 ```python
 # Download income statements, balance sheets, etc.
 client.fetch_bulk_financial_statements(
-    statement_type=[
-        "income-statement",
-        "balance-sheet-statement",
-        "cash-flow-statement",
-        "ratios"
-    ],
-    periods="all",  # annual + quarterly
-    start_year=2000,
-    end_year=2025,
+ statement_type=[
+ "income-statement",
+ "balance-sheet-statement",
+ "cash-flow-statement",
+ "ratios"
+ ],
+ periods="all", # annual + quarterly
+ start_year=2000,
+ end_year=2025,
 )
 ```
 
@@ -508,11 +508,11 @@ client.fetch_bulk_financial_statements(
 ```python
 # Direct SQL queries
 df = client.query("""
-    SELECT symbol, date, close, volume
-    FROM prices
-    WHERE symbol = 'AAPL'
-    AND date >= '2024-01-01'
-    ORDER BY date
+ SELECT symbol, date, close, volume
+ FROM prices
+ WHERE symbol = 'AAPL'
+ AND date >= '2024-01-01'
+ ORDER BY date
 """)
 ```
 
@@ -535,8 +535,8 @@ from qsresearch.strategies.factor.config import MOMENTUM_FACTOR_CONFIG
 
 # Run backtest with full MLflow logging
 results = run_backtest(
-    config=MOMENTUM_FACTOR_CONFIG,
-    log_to_mlflow=True
+ config=MOMENTUM_FACTOR_CONFIG,
+ log_to_mlflow=True
 )
 
 # Access metrics
@@ -551,10 +551,10 @@ from qsresearch.features.momentum import add_qsmom_features
 
 # Add momentum factor to price data
 df_with_factors = add_qsmom_features(
-    prices_df,
-    fast_period=21,
-    slow_period=252,
-    signal_period=126
+ prices_df,
+ fast_period=21,
+ slow_period=252,
+ signal_period=126
 )
 
 # The factor column is named: close_qsmom_21_252_126
@@ -565,16 +565,16 @@ df_with_factors = add_qsmom_features(
 from qsresearch.backtest.parameter_sweep import run_iterative_sweep
 
 sweep_config = {
-    "param_grid": {
-        "fast_period": [21, 42, 63],
-        "slow_period": [126, 252, 504],
-        "top_n": [10, 20, 30],
-    }
+ "param_grid": {
+ "fast_period": [21, 42, 63],
+ "slow_period": [126, 252, 504],
+ "top_n": [10, 20, 30],
+ }
 }
 
 results = run_iterative_sweep(
-    sweep_config=sweep_config,
-    experiment_name="Momentum_Factor_Iterative_Sweep"
+ sweep_config=sweep_config,
+ experiment_name="Momentum_Factor_Iterative_Sweep"
 )
 
 # Find best combination
@@ -590,14 +590,14 @@ Omega connects your strategies to interactive Brokers.
 ```python
 from omega import TradingApp
 
-app = TradingApp(paper_trading=True)  # Use paper account
+app = TradingApp(paper_trading=True) # Use paper account
 ```
 
 **Checking Positions:**
 ```python
 positions = app.get_positions()
 for pos in positions:
-    print(f"{pos['symbol']}: {pos['quantity']} shares @ ${pos['avg_cost']:.2f}")
+ print(f"{pos['symbol']}: {pos['quantity']} shares @ ${pos['avg_cost']:.2f}")
 ```
 
 **Rebalancing Portfolio:**
@@ -605,8 +605,8 @@ for pos in positions:
 # The key method: order_target_percent
 # This calculates exact shares needed to reach target allocation
 
-app.order_target_percent("AAPL", 0.05)  # 5% in Apple
-app.order_target_percent("MSFT", 0.05)  # 5% in Microsoft
+app.order_target_percent("AAPL", 0.05) # 5% in Apple
+app.order_target_percent("MSFT", 0.05) # 5% in Microsoft
 app.order_target_percent("GOOGL", 0.05) # 5% in Google
 
 # To exit a position completely
@@ -628,7 +628,7 @@ orders = omega_trades_from_zipline(current, target)
 
 # Execute
 for order in orders:
-    app.submit_order(order)
+ app.submit_order(order)
 ```
 
 ---
@@ -645,9 +645,9 @@ luigid --port 8082
 
 # Run the full pipeline
 python -m workflow.dags.01_ingest_data ExecuteTrades \
-    --start-date 2015-01-01 \
-    --run-date 2025-12-30 \
-    --local-scheduler
+ --start-date 2015-01-01 \
+ --run-date 2025-12-30 \
+ --local-scheduler
 ```
 
 The Luigi DAG executes in order:
@@ -723,13 +723,13 @@ MY_STRATEGY_CONFIG["experiment_name"] = "My Custom Strategy"
 2. **Modify parameters:**
 ```python
 MY_STRATEGY_CONFIG["factors"] = [
-    {
-        "name": "momentum_factor",
-        "params": {
-            "fast_period": 42,   # 2 months
-            "slow_period": 126,  # 6 months
-        }
-    }
+ {
+ "name": "momentum_factor",
+ "params": {
+ "fast_period": 42, # 2 months
+ "slow_period": 126, # 6 months
+ }
+ }
 ]
 ```
 
@@ -740,9 +740,9 @@ results = run_backtest(MY_STRATEGY_CONFIG)
 ```
 
 4. **Compare in MLflow:**
-   - Open `http://localhost:5050`
-   - View all runs side-by-side
-   - Select best by Sharpe ratio
+ - Open `http://localhost:5050`
+ - View all runs side-by-side
+ - Select best by Sharpe ratio
 
 ---
 
@@ -752,13 +752,13 @@ results = run_backtest(MY_STRATEGY_CONFIG)
 
 ```python
 class Client:
-    def stock_list(asset_type="stock", exchanges=None, min_price=5.0) -> pd.DataFrame
-    def bulk_historical_prices(start_date, end_date, symbols=None, use_cache=True) -> pl.DataFrame
-    def fetch_bulk_financial_statements(statement_type, periods, start_year, end_year) -> Dict
-    def query(sql: str) -> pl.DataFrame
-    def build_zipline_bundle(bundle_name, start_date=None, end_date=None) -> None
-    def register_bundle(bundle_name) -> None
-    def ingest_bundle(bundle_name) -> None
+ def stock_list(asset_type="stock", exchanges=None, min_price=5.0) -> pd.DataFrame
+ def bulk_historical_prices(start_date, end_date, symbols=None, use_cache=True) -> pl.DataFrame
+ def fetch_bulk_financial_statements(statement_type, periods, start_year, end_year) -> Dict
+ def query(sql: str) -> pl.DataFrame
+ def build_zipline_bundle(bundle_name, start_date=None, end_date=None) -> None
+ def register_bundle(bundle_name) -> None
+ def ingest_bundle(bundle_name) -> None
 ```
 
 ### QS Research
@@ -774,15 +774,15 @@ def calculate_all_metrics(performance: pd.DataFrame, benchmark=None) -> Dict[str
 
 ```python
 class TradingApp:
-    def connect() -> bool
-    def disconnect() -> None
-    def get_positions() -> List[Dict]
-    def get_account_info() -> Dict
-    def get_portfolio_value() -> float
-    def order_target_percent(symbol, target_percent, order_type="MKT") -> Trade
-    def liquidate_position(symbol) -> Trade
-    def get_open_orders() -> List[Dict]
-    def cancel_all_orders() -> int
+ def connect() -> bool
+ def disconnect() -> None
+ def get_positions() -> List[Dict]
+ def get_account_info() -> Dict
+ def get_portfolio_value() -> float
+ def order_target_percent(symbol, target_percent, order_type="MKT") -> Trade
+ def liquidate_position(symbol) -> Trade
+ def get_open_orders() -> List[Dict]
+ def cancel_all_orders() -> int
 ```
 
 ---
@@ -806,9 +806,9 @@ Check for running Python processes or increase retry delay.
 **Issue: Zipline bundle not found**
 ```
 Solution: Run the bundle build steps:
-  client.build_zipline_bundle("historical_prices_fmp")
-  client.register_bundle("historical_prices_fmp")
-  client.ingest_bundle("historical_prices_fmp")
+ client.build_zipline_bundle("historical_prices_fmp")
+ client.register_bundle("historical_prices_fmp")
+ client.ingest_bundle("historical_prices_fmp")
 ```
 
 **Issue: Interactive Brokers connection failed**
@@ -823,7 +823,7 @@ Solution:
 **Issue: MLflow tracking server not found**
 ```
 Solution: Start the server with:
-  mlflow server --port 5050
+ mlflow server --port 5050
 Or set MLFLOW_TRACKING_URI to a valid location.
 ```
 
@@ -852,11 +852,11 @@ Proprietary - All Rights Reserved
 ---
 
 <p align="center">
-  <strong>Built with ❤️ by the Quant Science Team</strong>
+ <strong>Built with ❤️ by the Quant Science Team</strong>
 </p>
 
 <p align="center">
-  <a href="https://github.com/quant-science">GitHub</a> •
-  <a href="https://www.youtube.com/@QuantScience">YouTube</a> •
-  <a href="https://quantscience.io">Website</a>
+ <a href="https://github.com/quant-science">GitHub</a> •
+ <a href="https://www.youtube.com/@QuantScience">YouTube</a> •
+ <a href="https://quantscience.io">Website</a>
 </p>
