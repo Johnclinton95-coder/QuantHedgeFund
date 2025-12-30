@@ -1,0 +1,1 @@
+"""QS Research Strategies Module"""

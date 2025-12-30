@@ -1,0 +1,87 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quant-hedge-fund"
+version = "0.1.0"
+description = "A Python-powered Quant Hedge Fund System with automated data ingestion, backtesting, and trade execution"
+readme = "README.md"
+license = {text = "Proprietary"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Ashutosh0x", email = "ashutoshkumarsingh0x@gmail.com"}
+]
+keywords = ["algorithmic-trading", "quant", "hedge-fund", "backtesting", "mlflow"]
+
+dependencies = [
+    # Core
+    "python-dotenv>=1.0.0",
+    "pydantic>=2.0.0",
+    "loguru>=0.7.0",
+    "tqdm>=4.66.0",
+    
+    # Data Layer
+    "duckdb>=0.9.0",
+    "polars>=0.19.0",
+    "pandas>=2.0.0",
+    "pyarrow>=14.0.0",
+    "requests>=2.31.0",
+    
+    # Research Layer
+    "zipline-reloaded>=3.0.0",
+    "mlflow>=2.9.0",
+    "xgboost>=2.0.0",
+    "scikit-learn>=1.3.0",
+    "pandas-ta>=0.3.14b",
+    "quantstats>=0.0.62",
+    
+    # Orchestration
+    "luigi>=3.4.0",
+    "prefect>=2.14.0",
+    
+    # Execution Layer
+    "ib_insync>=0.9.86",
+    
+    # Dashboard
+    "streamlit>=1.28.0",
+    "plotly>=5.18.0",
+    
+    # AI Integration
+    "openai>=1.3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.5.0",
+    "ipykernel>=6.25.0",
+    "jupyter>=1.0.0",
+]
+
+[project.scripts]
+qhf-setup = "scripts.setup_database:main"
+qhf-download = "scripts.download_initial_data:main"
+qhf-dashboard = "scripts.start_dashboard:main"
+qhf-workflow = "scripts.run_workflow:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["qsconnect*", "qsresearch*", "omega*", "workflow*", "automation*", "dashboard*", "config*"]
+
+[tool.black]
+line-length = 100
+target-version = ['py310', 'py311', 'py312']
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "I", "N", "W"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --tb=short"
