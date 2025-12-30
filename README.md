@@ -1,4 +1,4 @@
-# 🏦 Quant Hedge Fund System
+# Quant Hedge Fund System
 
 <p align="center">
  <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python"/>
@@ -15,7 +15,7 @@
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#-overview)
 - [Architecture](#-architecture)
@@ -32,7 +32,7 @@
 
 ---
 
-## 🎯 Overview
+## Overview
 
 The **Quant Hedge Fund System** is a comprehensive, end-to-end algorithmic trading platform that automates the entire investment process:
 
@@ -65,23 +65,23 @@ Unlike simple trading bots, this is a **full quant infrastructure**:
 
 ---
 
-## 🏗 Architecture
+## Architecture
 
 The system follows a **layered architecture** with clear separation of concerns:
 
 ```mermaid
 graph TB
- subgraph Monitoring["📊 MONITORING LAYER"]
+ subgraph Monitoring[" MONITORING LAYER"]
  Dashboard["Streamlit Dashboard"]
  MLflowUI["MLflow UI"]
  end
 
- subgraph Orchestration["⚙️ ORCHESTRATION LAYER"]
+ subgraph Orchestration[" ORCHESTRATION LAYER"]
  Luigi["Luigi<br/>(Development)"]
  Prefect["Prefect<br/>(Production)"]
  end
 
- subgraph Core["🔧 CORE LAYERS"]
+ subgraph Core[" CORE LAYERS"]
  subgraph Data["DATA LAYER<br/>(QS Connect)"]
  FMP["FMP API"]
  DuckDB["DuckDB"]
@@ -128,13 +128,13 @@ graph TB
 
 ```mermaid
 flowchart LR
- A[("🌐 FMP API")] --> B[("📁 Parquet Cache")]
- B --> C[("🦆 DuckDB")]
- C --> D[("📦 Zipline Bundle")]
- D --> E[("🔬 Backtest")]
- E --> F[("📊 MLflow")]
+ A[(" FMP API")] --> B[(" Parquet Cache")]
+ B --> C[(" DuckDB")]
+ C --> D[(" Zipline Bundle")]
+ D --> E[(" Backtest")]
+ E --> F[(" MLflow")]
  F --> G[(" Omega")]
- G --> H[("🏦 Interactive Brokers")]
+ G --> H[(" Interactive Brokers")]
 
  style A fill:#1f77b4,color:#fff
  style C fill:#FFF000,color:#000
@@ -153,7 +153,7 @@ flowchart LR
 
 ---
 
-## ✨ Features
+## Features
 
 ### Data Layer (QS Connect)
 
@@ -209,89 +209,89 @@ flowchart LR
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 QuantHedgeFund/
-│
-├── config/ # Configuration and settings
-│ ├── __init__.py # Module exports
-│ ├── settings.py # Pydantic settings management
-│ ├── constants.py # Enums and default parameters
-│ └── logging_config.py # Loguru logging setup
-│
-├── qsconnect/ # DATA LAYER
-│ ├── __init__.py # Main Client import
-│ ├── client.py # ⭐ Primary data interface
-│ ├── api/
-│ │ ├── base_client.py # Rate-limited HTTP client
-│ │ └── fmp_client.py # FMP API implementation
-│ ├── database/
-│ │ └── duckdb_manager.py # ⭐ Database operations
-│ ├── cache/
-│ │ └── cache_manager.py # Parquet caching
-│ ├── bundle/
-│ │ └── zipline_bundler.py # Zipline bundle creation
-│ └── utils/
-│ └── paths.py # Path utilities
-│
-├── qsresearch/ # RESEARCH LAYER
-│ ├── __init__.py
-│ ├── features/
-│ │ ├── momentum.py # ⭐ QSMOM factor
-│ │ ├── forward_returns.py # ML target creation
-│ │ ├── factor_engine.py # Factor computation engine
-│ │ └── technical_indicators.py # pandas-ta integration
-│ ├── preprocessors/
-│ │ ├── price_preprocessor.py # Data cleaning
-│ │ └── universe_screener.py # Stock filtering
-│ ├── backtest/
-│ │ ├── run_backtest.py # ⭐ Main backtest runner
-│ │ ├── parameter_sweep.py # Iterative sweeps
-│ │ └── strategy_artifacts.py # Manifest generation
-│ ├── portfolio_analysis/
-│ │ ├── performance_metrics.py # ⭐ 88+ metrics
-│ │ └── tear_sheets.py # HTML reports
-│ └── strategies/
-│ └── factor/
-│ ├── algorithms.py # Signal generation
-│ └── config.py # ⭐ Strategy configs
-│
-├── omega/ # EXECUTION LAYER
-│ ├── __init__.py
-│ ├── trading_app.py # ⭐ IB trading interface
-│ └── utils/
-│ └── omega_trades_converter.py
-│
-├── workflow/ # LUIGI ORCHESTRATION
-│ ├── dags/
-│ │ └── 01_ingest_data.py # ⭐ Complete DAG
-│ └── luigi.cfg # Luigi configuration
-│
-├── automation/ # PREFECT ORCHESTRATION
-│ ├── prefect_flows.py # ⭐ Production flows
-│ └── deployment_manager.py # Model promotion
-│
-├── dashboard/ # STREAMLIT UI
-│ └── app.py # ⭐ Main dashboard
-│
-├── scripts/ # UTILITIES
-│ ├── setup_database.py # Initialize DB
-│ ├── download_initial_data.py # First data download
-│ └── start_dashboard.py # Launch dashboard
-│
-├── .env.example # Environment template
-├── .gitignore # Git ignore rules
-├── requirements.txt # Python dependencies
-├── pyproject.toml # Project metadata
-├── README.md # This file
-└── docs/
- └── DOCUMENTATION.md # Detailed documentation
+
+ config/ # Configuration and settings
+ __init__.py # Module exports
+ settings.py # Pydantic settings management
+ constants.py # Enums and default parameters
+ logging_config.py # Loguru logging setup
+
+ qsconnect/ # DATA LAYER
+ __init__.py # Main Client import
+ client.py # Primary data interface
+ api/
+ base_client.py # Rate-limited HTTP client
+ fmp_client.py # FMP API implementation
+ database/
+ duckdb_manager.py # Database operations
+ cache/
+ cache_manager.py # Parquet caching
+ bundle/
+ zipline_bundler.py # Zipline bundle creation
+ utils/
+ paths.py # Path utilities
+
+ qsresearch/ # RESEARCH LAYER
+ __init__.py
+ features/
+ momentum.py # QSMOM factor
+ forward_returns.py # ML target creation
+ factor_engine.py # Factor computation engine
+ technical_indicators.py # pandas-ta integration
+ preprocessors/
+ price_preprocessor.py # Data cleaning
+ universe_screener.py # Stock filtering
+ backtest/
+ run_backtest.py # Main backtest runner
+ parameter_sweep.py # Iterative sweeps
+ strategy_artifacts.py # Manifest generation
+ portfolio_analysis/
+ performance_metrics.py # 88+ metrics
+ tear_sheets.py # HTML reports
+ strategies/
+ factor/
+ algorithms.py # Signal generation
+ config.py # Strategy configs
+
+ omega/ # EXECUTION LAYER
+ __init__.py
+ trading_app.py # IB trading interface
+ utils/
+ omega_trades_converter.py
+
+ workflow/ # LUIGI ORCHESTRATION
+ dags/
+ 01_ingest_data.py # Complete DAG
+ luigi.cfg # Luigi configuration
+
+ automation/ # PREFECT ORCHESTRATION
+ prefect_flows.py # Production flows
+ deployment_manager.py # Model promotion
+
+ dashboard/ # STREAMLIT UI
+ app.py # Main dashboard
+
+ scripts/ # UTILITIES
+ setup_database.py # Initialize DB
+ download_initial_data.py # First data download
+ start_dashboard.py # Launch dashboard
+
+ .env.example # Environment template
+ .gitignore # Git ignore rules
+ requirements.txt # Python dependencies
+ pyproject.toml # Project metadata
+ README.md # This file
+ docs/
+ DOCUMENTATION.md # Detailed documentation
 ```
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -383,23 +383,23 @@ Open `http://localhost:5050` to view experiments.
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### Environment Variables
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `FMP_API_KEY` | Financial Modeling Prep API key | ✅ |
-| `DATALINK_API_KEY` | Datalink API key (alternative data) | ❌ |
-| `OPENAI_API_KEY` | OpenAI API for AI Quant Team | ❌ |
-| `DUCKDB_PATH` | Path to DuckDB database file | ❌ |
-| `CACHE_DIR` | Directory for parquet cache | ❌ |
-| `LOG_DIR` | Directory for log files | ❌ |
-| `MLFLOW_TRACKING_URI` | MLflow server URL | ❌ |
-| `MLFLOW_EXPERIMENT_NAME` | Default experiment name | ❌ |
-| `IB_HOST` | Interactive Brokers Gateway host | ❌ |
-| `IB_PORT` | IB Gateway port (7497 paper, 7496 live) | ❌ |
-| `IB_CLIENT_ID` | IB client identifier | ❌ |
+| `FMP_API_KEY` | Financial Modeling Prep API key | |
+| `DATALINK_API_KEY` | Datalink API key (alternative data) | |
+| `OPENAI_API_KEY` | OpenAI API for AI Quant Team | |
+| `DUCKDB_PATH` | Path to DuckDB database file | |
+| `CACHE_DIR` | Directory for parquet cache | |
+| `LOG_DIR` | Directory for log files | |
+| `MLFLOW_TRACKING_URI` | MLflow server URL | |
+| `MLFLOW_EXPERIMENT_NAME` | Default experiment name | |
+| `IB_HOST` | Interactive Brokers Gateway host | |
+| `IB_PORT` | IB Gateway port (7497 paper, 7496 live) | |
+| `IB_CLIENT_ID` | IB client identifier | |
 
 ### Strategy Configuration
 
@@ -460,7 +460,7 @@ MOMENTUM_FACTOR_CONFIG = {
 
 ---
 
-## 🔬 Components Deep Dive
+## Components Deep Dive
 
 ### QS Connect (Data Layer)
 
@@ -633,7 +633,7 @@ for order in orders:
 
 ---
 
-## 🔄 Running the System
+## Running the System
 
 ### Development: Luigi Workflow
 
@@ -680,7 +680,7 @@ Deployed flows:
 
 ---
 
-## 📊 Strategy Development
+## Strategy Development
 
 ### The QSMOM Factor
 
@@ -746,7 +746,7 @@ results = run_backtest(MY_STRATEGY_CONFIG)
 
 ---
 
-## 📖 API Reference
+## API Reference
 
 ### QS Connect Client
 
@@ -787,7 +787,7 @@ class TradingApp:
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -829,7 +829,7 @@ Or set MLFLOW_TRACKING_URI to a valid location.
 
 ---
 
-## ⚠️ License & Disclaimer
+## License & Disclaimer
 
 ### Disclaimer
 
@@ -852,7 +852,7 @@ Proprietary - All Rights Reserved
 ---
 
 <p align="center">
- <strong>Built with ❤️ by the Quant Science Team</strong>
+ <strong>Built with by the Quant Science Team</strong>
 </p>
 
 <p align="center">
