@@ -193,6 +193,15 @@ flowchart LR
 | **Zipline Bundler** | One-line command to create Zipline data bundles |
 | **Rate Limiting** | Automatic API rate limiting with retries |
 
+#### Real-Time Layer (TIP-Search)
+| Feature | Description |
+|---------|-------------|
+| **Latency Profiling** | Offline profiling of model inference times (P99 latency) |
+| **Deadline Awareness** | Filters models that cannot meet the strict nanosecond deadline |
+| **Accuracy Maximization** | Selects the most accurate valid model dynamically |
+| **O(K) Scheduling** | Constant-time decision making for low-latency loops |
+| **Task Abstraction** | Unified `InferenceTask` interface for all market events |
+
 ### Research Layer (QS Research)
 
 | Feature | Description |

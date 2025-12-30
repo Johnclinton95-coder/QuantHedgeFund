@@ -115,6 +115,33 @@ flowchart TD
  style A fill:#1f77b4,color:#fff
  style E fill:#00ff88,color:#000
 ```
+ 
+ #### Layer 2.5: Real-Time Inference (TIP-Search)
+ 
+ **Purpose:** Perform ultra-low latency inference for live trading.
+ 
+ **Why it matters:** Markets move in milliseconds. This layer ensures you never miss a deadline by dynamically selecting the most accurate model that fits the current time budget.
+ 
+ **Key components:**
+ - **InferenceTask** - Represents a market tick with a strict nanosecond deadline
+ - **ModelWrapper** - Wraps models with latency profiles and accuracy estimators
+ - **TIPSearchScheduler** - The brain that picks the best model in $O(K)$ time
+ 
+ **How it works:**
+ 
+ ```mermaid
+ flowchart TD
+  A["Market Tick"] --> B["Scheduler"]
+  B --> C{Check Deadline}
+  C -- Tight Budget --> D["Fast Model (CNN)"]
+  C -- Loose Budget --> E["Slow Model (Transformer)"]
+  D --> F["Signal"]
+  E --> F
+  
+  style C fill:#e6550d,color:#fff
+  style D fill:#3182bd,color:#fff
+  style E fill:#3182bd,color:#fff
+ ```
 
 #### Layer 3: Execution Layer (Omega)
 
