@@ -344,7 +344,9 @@ class DuckDBManager:
         where_clauses = []
         
         if symbols:
-            symbols_str = ",".join([f"'{s}'" for s in symbols])
+            # Sanitize symbols to prevent SQL injection
+            sanitized = [s.replace("'", "").replace(";", "").upper()[:10] for s in symbols]
+            symbols_str = ",".join([f"'{s}'" for s in sanitized])
             where_clauses.append(f"symbol IN ({symbols_str})")
         if start_date:
             where_clauses.append(f"date >= '{start_date}'")

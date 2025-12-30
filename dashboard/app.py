@@ -70,7 +70,7 @@ def main():
         st.subheader("AI Settings")
         openai_model = st.selectbox(
             "OpenAI model",
-            ["gpt-4.1-mini", "gpt-4", "gpt-3.5-turbo"],
+            ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "gpt-3.5-turbo"],
         )
         
         st.divider()
@@ -395,4 +395,8 @@ def render_ai_quant():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        st.error(f"Dashboard error: {e}")
+        st.info("Please check that the database is initialized. Run: python scripts/setup_database.py")

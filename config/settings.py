@@ -73,7 +73,7 @@ class Settings(BaseSettings):
     # ===================
     # OpenAI Settings
     # ===================
-    openai_model: str = Field(default="gpt-4.1-mini", description="OpenAI model to use")
+    openai_model: str = Field(default="gpt-4o-mini", description="OpenAI model to use")
     
     # ===================
     # Orchestration

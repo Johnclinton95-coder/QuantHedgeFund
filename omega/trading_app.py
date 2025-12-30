@@ -147,11 +147,15 @@ class TradingApp:
         positions = []
         
         for pos in self._ib.positions():
+            # Note: market_value uses avgCost as approximation
+            # For accurate market value, use get_quote() to get current price
+            avg_cost = pos.avgCost if pos.avgCost else 0.0
             positions.append({
                 "symbol": pos.contract.symbol,
                 "quantity": pos.position,
-                "avg_cost": pos.avgCost,
-                "market_value": pos.position * pos.avgCost,
+                "avg_cost": avg_cost,
+                "cost_basis": pos.position * avg_cost,
+                "market_value": pos.position * avg_cost,  # TODO: multiply by current price for accuracy
                 "contract": pos.contract,
             })
         
@@ -220,9 +224,10 @@ class TradingApp:
         # Calculate difference
         diff_value = target_value - current_value
         
-        # Skip if difference is too small
-        if abs(diff_value) < 100:  # $100 threshold
-            logger.info(f"Skipping {symbol}: difference too small (${diff_value:.2f})")
+        # Configurable minimum order threshold (default $100)
+        min_order_threshold = getattr(get_settings(), 'min_order_threshold', 100)
+        if abs(diff_value) < min_order_threshold:
+            logger.info(f"Skipping {symbol}: difference too small (${diff_value:.2f}, threshold: ${min_order_threshold})")
             return None
         
         # Get current price for share calculation
