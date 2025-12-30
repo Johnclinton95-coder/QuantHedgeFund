@@ -17,18 +17,18 @@
 
 ## Table of Contents
 
-- [Overview](#-overview)
-- [Architecture](#-architecture)
-- [Features](#-features)
-- [Project Structure](#-project-structure)
-- [Quick Start](#-quick-start)
-- [Configuration](#-configuration)
-- [Components Deep Dive](#-components-deep-dive)
-- [Running the System](#-running-the-system)
-- [Strategy Development](#-strategy-development)
-- [API Reference](#-api-reference)
-- [Troubleshooting](#-troubleshooting)
-- [License & Disclaimer](#-license--disclaimer)
+- [Overview](#overview)
+- [Architecture](#architecture)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
+- [Components Deep Dive](#components-deep-dive)
+- [Running the System](#running-the-system)
+- [Strategy Development](#strategy-development)
+- [API Reference](#api-reference)
+- [Troubleshooting](#troubleshooting)
+- [License & Disclaimer](#license--disclaimer)
 
 ---
 
@@ -852,7 +852,7 @@ Proprietary - All Rights Reserved
 ---
 
 <p align="center">
- <strong>Built with by the Quant Science Team</strong>
+ <strong>Built by the Quant Science Team</strong>
 </p>
 
 <p align="center">
