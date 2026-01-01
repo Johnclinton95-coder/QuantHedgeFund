@@ -13,7 +13,11 @@ class MarketAnalyst:
     
     def __init__(self, api_key: Optional[str] = None):
         # Prioritize Groq as requested by user
-        self.groq_key = os.getenv("GROK_API_KEY")
+        from dotenv import load_dotenv
+        load_dotenv()
+        
+        # Try standard env var, then user custom var
+        self.groq_key = os.getenv("GROQ_API_KEY") or os.getenv("GROK_API_KEY")
         self.client = Groq(api_key=self.groq_key)
         self.model = "llama-3.3-70b-versatile" # Updated to new supported model
         logger.info("🧠 Initializing AI Service with Groq (Llama3-70b)")
