@@ -14,7 +14,11 @@ class MarketAnalyst:
     def __init__(self, api_key: Optional[str] = None):
         # Prioritize Groq as requested by user
         from dotenv import load_dotenv
-        load_dotenv()
+        from pathlib import Path
+        
+        # Explicitly load .env from project root to ensure keys are found locally
+        env_path = Path(__file__).resolve().parent.parent / '.env'
+        load_dotenv(dotenv_path=env_path)
         
         # Try standard env var, then user custom var
         self.groq_key = os.getenv("GROQ_API_KEY") or os.getenv("GROK_API_KEY")
