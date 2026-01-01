@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 import polars as pl
 import json
+import hashlib
 from loguru import logger
 
 from qsresearch.llm.client import GroqClient
@@ -175,9 +176,16 @@ class StrategyGenerator:
                 
                 # VALIDATE
                 valid_config = self.validate_config(raw_config)
+                
+                # Generate unique immutable hash for this config
+                config_str = json.dumps(valid_config, sort_keys=True)
+                strat_hash = hashlib.sha256(config_str.encode()).hexdigest()
+                
                 valid_config["candidate_id"] = f"candidate_{i+1}"
+                valid_config["strategy_hash"] = strat_hash
                 valid_config["style"] = diversity_prompt
                 valid_config["reasoning"] = reasoning
+                valid_config["regime_snapshot"] = regime # Freeze the context
                 
                 candidates.append(valid_config)
                 
@@ -185,6 +193,7 @@ class StrategyGenerator:
                 if mlflow_active:
                     with mlflow.start_run(run_name=f"Generate_{regime['regime_label']}_{i}"):
                         mlflow.log_params(regime)
+                        mlflow.log_param("strategy_hash", strat_hash)
                         mlflow.log_param("style", diversity_prompt)
                         mlflow.log_text(reasoning, "reasoning.txt")
                         mlflow.log_dict(valid_config, "config.json")

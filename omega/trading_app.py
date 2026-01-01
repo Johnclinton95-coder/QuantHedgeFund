@@ -9,8 +9,10 @@ from typing import Optional, Dict, List, Any
 from loguru import logger
 
 from config.settings import get_settings
+from config.registry import get_registry
 from qsresearch.governance.manager import GovernanceManager
 from omega.data.candle_engine import CandleAggregator, BarCloseEventBus, Tick
+from omega.risk_engine import RiskManager
 
 
 
@@ -65,6 +67,8 @@ class TradingApp:
             self._db_manager = DuckDBManager(Path("data/quant.duckdb"))
             
         self.gov = GovernanceManager(self._db_manager)
+        self.registry = get_registry()
+        self.risk_manager = RiskManager()
         self.active_strategy: Optional[Dict[str, Any]] = None
 
         # --- Phase 3: Candle Truth Layer ---
@@ -173,7 +177,9 @@ class TradingApp:
                 price=float(tick.price),
                 size=float(tick.size),
                 exchange_ts=exchange_ts,
-                recv_ts=recv_ts
+                recv_ts=recv_ts,
+                source="IBKR",
+                asset_class=self.registry.get_asset_class(symbol)
             )
             
             self.aggregators[symbol].process_tick(truth_tick)
@@ -197,7 +203,9 @@ class TradingApp:
             symbol=symbol,
             interval_sec=interval_sec,
             event_bus=self.event_bus,
-            db_mgr=self._db_manager
+            db_mgr=self._db_manager,
+            source="IBKR",
+            asset_class=self.registry.get_asset_class(symbol)
         )
         self.aggregators[symbol] = agg
         
@@ -343,12 +351,7 @@ class TradingApp:
     def _validate_risk(self, symbol: str, shares: int, current_price: float, side: str) -> bool:
         """
         Internal pre-trade risk validation.
-        
-        Checks:
-        1. System halt state
-        2. Max symbol exposure
-        3. Portfolio leverage
-        4. (Placeholder) Daily loss limit
+        Delegates to the centralized RiskManager engine.
         
         Returns:
             True if trade is safe to proceed
@@ -381,30 +384,25 @@ class TradingApp:
             logger.error(f"RISK REJECTED: PAPER strategy cannot run on LIVE account.")
             return False
 
-
-        settings = get_settings()
+        # --- Centralized Risk Engine Call ---
         portfolio_value = self.get_portfolio_value()
-        order_value = abs(shares * current_price)
-        
-        # 1. Individual Symbol Exposure
-        current_pos = self.get_position(symbol)
-        current_pos_value = current_pos["market_value"] if current_pos else 0.0
-        new_pos_value = current_pos_value + (order_value if side == "BUY" else -order_value)
-        
-        exposure_pct = abs(new_pos_value) / portfolio_value
-        if exposure_pct > settings.max_symbol_exposure_pct:
-            logger.error(f"RISK REJECTED: {symbol} exposure would be {exposure_pct:.1%}, exceeds limit of {settings.max_symbol_exposure_pct:.1%}")
-            return False
+        current_positions = self.get_positions()
+        account_info = self.get_account_info()
+        asset_class = self.registry.get_asset_class(symbol)
 
-        # 2. Leverage Check
-        # Gross position value = total value of all positions
-        info = self.get_account_info()
-        gross_value = info.get("GrossPositionValue", 0.0)
-        new_gross_value = gross_value + order_value
-        leverage = new_gross_value / portfolio_value
-        
-        if leverage > settings.max_leverage:
-            logger.error(f"RISK REJECTED: Portfolio leverage would be {leverage:.2f}, exceeds limit of {settings.max_leverage}")
+        is_valid, reason = self.risk_manager.validate_order(
+            symbol=symbol,
+            asset_class=asset_class,
+            side=side,
+            quantity=shares,
+            price=current_price,
+            portfolio_value=portfolio_value,
+            current_positions=current_positions,
+            account_info=account_info
+        )
+
+        if not is_valid:
+            logger.error(f"RISK REJECTED: {reason}")
             return False
 
         return True

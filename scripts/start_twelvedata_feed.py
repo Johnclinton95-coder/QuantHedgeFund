@@ -17,9 +17,19 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from qsconnect.database.duckdb_manager import DuckDBManager
 from omega.data.candle_engine import CandleAggregator, Tick, SessionManager
 
+from config.registry import get_registry
+
+from config.registry import get_registry
+
 # API Configuration
-API_KEY = "2b20a28a0c5040f082c35cb6f95a75c2"
-SYMBOLS = ["AMZN", "AAPL", "MSFT", "GOOGL", "TSLA", "EUR/USD", "BTC/USD"]
+API_KEY = os.environ.get("TWELVE_DATA_API_KEY")
+if not API_KEY:
+    # Fallback to hardcoded for this session if env not loaded yet, 
+    # but prefer env in production
+    API_KEY = "2b20a28a0c5040f082c35cb6f95a75c2"
+
+REGISTRY = get_registry()
+SYMBOLS = [s for s, cfg in REGISTRY.assets.items() if cfg.get("realtime_feed") == "TWELVE_DATA"]
 
 # Force override session check to allow 24/7 processing (Crypto/Forex/Testing)
 class PermissiveSession(SessionManager):
@@ -27,7 +37,7 @@ class PermissiveSession(SessionManager):
 
 # Globals
 db_path = Path(__file__).parent.parent / "data" / "quant.duckdb"
-DB_MGR = DuckDBManager(db_path, read_only=False)
+DB_MGR = DuckDBManager(db_path, read_only=False, auto_close=True)
 AGGREGATORS = {}
 
 def on_message(ws, message):
@@ -37,31 +47,36 @@ def on_message(ws, message):
         
         # Twelve Data 'price' event (Quote)
         if event == "price":
-            # Sample: {"event":"price","symbol":"AAPL","currency":"USD","exchange":"NASDAQ",
-            #          "type":"Common Stock","timestamp":1616...,"price":121.21,"day_volume":0}
             symbol = data.get("symbol")
+            if symbol not in AGGREGATORS:
+                return
+
             price = float(data.get("price", 0))
-            ts = data.get("timestamp", time.time())
+            raw_ts = data.get("timestamp")
             
-            # Map common variations
-            if symbol == "EUR/USD": symbol = "EURUSD" # Adjust if needed by DB
+            # Robust timestamp handling
+            if isinstance(raw_ts, (int, float)):
+                exchange_ts = raw_ts
+            else:
+                exchange_ts = time.time()
+                
+            tick = Tick(
+                symbol=symbol,
+                price=price,
+                size=0, # Quote-only feed
+                exchange_ts=exchange_ts,
+                recv_ts=time.time(),
+                source="TWELVE_DATA",
+                asset_class=REGISTRY.get_asset_class(symbol)
+            )
             
-            if symbol in AGGREGATORS:
-                tick = Tick(
-                    symbol=symbol,
-                    price=price,
-                    size=100, # Fake size if missing
-                    exchange_ts=ts,
-                    recv_ts=time.time()
-                )
-                
-                # Process Tick
-                AGGREGATORS[symbol].process_tick(tick)
-                print(f"Update {symbol}: {price:.2f}")
-                
-                # Release Lock immediately
-                DB_MGR.close()
-                
+            # Process Tick
+            AGGREGATORS[symbol].process_tick(tick)
+            print(f"Update {symbol}: {price:.2f}")
+
+        elif event == "subscribe-status":
+            print(f"📡 Subscription Status: {data.get('status')} for {data.get('success', [])}")
+            
         elif event == "heartbeat":
             print(".", end="", flush=True)
             
@@ -98,25 +113,34 @@ def main():
         AGGREGATORS[sym] = CandleAggregator(
             symbol=sym, 
             session_mgr=PermissiveSession(),
-            db_mgr=DB_MGR
+            db_mgr=DB_MGR,
+            source="TWELVE_DATA",
+            asset_class=REGISTRY.get_asset_class(sym)
         )
     
-    # Run WebSocket
-    # URL: The main endpoint for streaming
+    # Run WebSocket with reconnection logic
     ws_url = f"wss://ws.twelvedata.com/v1/quotes/price?apikey={API_KEY}"
     
-    ws = websocket.WebSocketApp(
-        ws_url,
-        on_open=on_open,
-        on_message=on_message,
-        on_error=on_error,
-        on_close=on_close
-    )
-    
-    try:
-        ws.run_forever()
-    except KeyboardInterrupt:
-        print("\n🛑 Stopped.")
+    while True:
+        print(f"Connecting to Twelve Data...")
+        ws = websocket.WebSocketApp(
+            ws_url,
+            on_open=on_open,
+            on_message=on_message,
+            on_error=on_error,
+            on_close=on_close
+        )
+        
+        try:
+            ws.run_forever()
+        except KeyboardInterrupt:
+            print("\n🛑 Stopped by user.")
+            break
+        except Exception as e:
+            print(f"\n⚠️ WS Crash: {e}")
+            
+        print("Waiting 5s before reconnecting...")
+        time.sleep(5)
 
 if __name__ == "__main__":
     main()

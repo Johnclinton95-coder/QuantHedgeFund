@@ -45,17 +45,35 @@ class DuckDBManager:
         if not self.read_only:
             self.connect()
             self._init_schema()
+            self.close() # Ensure we release the lock after init
         
         logger.info(f"DuckDB manager initialized: {self.db_path} (read_only={self.read_only})")
     
     def connect(self) -> duckdb.DuckDBPyConnection:
-        """Establish database connection."""
+        """Establish database connection with aggressive retries for Windows/OneDrive file locking."""
+        import time
+        import random
         if self._conn is None:
-            config = {}
-            if self.read_only:
-                config['access_mode'] = 'READ_ONLY'
-                
-            self._conn = duckdb.connect(str(self.db_path), read_only=self.read_only, config=config)
+            max_retries = 15
+            for attempt in range(max_retries):
+                try:
+                    config = {
+                        "access_mode": "READ_ONLY" if self.read_only else "AUTOMATIC",
+                        "threads": 1 # Reduce overhead in high-concurrency scenarios
+                    }
+                    self._conn = duckdb.connect(str(self.db_path), read_only=self.read_only, config=config)
+                    return self._conn
+                except Exception as e:
+                    err_msg = str(e).lower()
+                    if ("used by another process" in err_msg or "cannot open" in err_msg) and attempt < max_retries - 1:
+                        # Exponential backoff with jitter
+                        wait_time = (0.1 * (2 ** attempt)) + (random.random() * 0.1)
+                        if attempt > 5:
+                            logger.warning(f"DB lock contention high, retrying in {wait_time:.2f}s... (Attempt {attempt + 1}/{max_retries})")
+                        time.sleep(wait_time)
+                    else:
+                        logger.error(f"Failed to connect to DuckDB after {attempt+1} attempts: {e}")
+                        raise e
         return self._conn
     
     def close(self) -> None:
@@ -63,7 +81,7 @@ class DuckDBManager:
         if self._conn:
             self._conn.close()
             self._conn = None
-            logger.info("DuckDB connection closed")
+            logger.debug("DuckDB connection closed")
     
     def _init_schema(self) -> None:
         """Initialize database schema."""
@@ -243,9 +261,19 @@ class DuckDBManager:
                 close DOUBLE,
                 volume DOUBLE,
                 is_final BOOLEAN,
+                source VARCHAR,
+                asset_class VARCHAR,
                 PRIMARY KEY (symbol, timestamp)
             )
         """)
+        
+        # Migration: Add columns if they don't exist (DuckDB doesn't have native IF NOT EXISTS for columns yet)
+        try:
+            conn.execute("ALTER TABLE realtime_candles ADD COLUMN source VARCHAR")
+        except: pass
+        try:
+            conn.execute("ALTER TABLE realtime_candles ADD COLUMN asset_class VARCHAR")
+        except: pass
 
         # Create indexes
         conn.execute("CREATE INDEX IF NOT EXISTS idx_prices_symbol ON prices(symbol)")
@@ -256,6 +284,24 @@ class DuckDBManager:
         
         logger.info("Database schema initialized with Governance and Execution logs")
     
+    def execute(self, sql: str, params: Optional[Any] = None) -> None:
+        """
+        Execute a SQL command (INSERT, UPDATE, DELETE) with auto_close support.
+        
+        Args:
+            sql: SQL command string
+            params: Optional parameters for parameterized queries
+        """
+        conn = self.connect()
+        try:
+            if params:
+                conn.execute(sql, params)
+            else:
+                conn.execute(sql)
+        finally:
+            if self.auto_close:
+                self.close()
+
     # =====================
     # Query Methods
     # =====================

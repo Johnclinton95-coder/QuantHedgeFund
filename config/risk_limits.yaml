@@ -1,0 +1,26 @@
+# QuantHedgeFund Risk Limits
+# Centralized limits enforced by the RiskManager
+
+GLOBAL_LIMITS:
+  max_total_leverage: 2.0  # (Gross Position Value / Net Liquidity)
+  daily_loss_limit_usd: 5000.0
+  max_symbol_exposure_pct: 0.20  # Max 20% in any single symbol
+  min_order_threshold_usd: 100.0
+
+ASSET_CLASS_LIMITS:
+  EQUITY:
+    max_total_exposure_pct: 0.80
+    max_symbol_exposure_pct: 0.20
+  FX:
+    max_total_exposure_pct: 0.40
+    max_symbol_exposure_pct: 0.10
+  METAL:
+    max_total_exposure_pct: 0.20
+    max_symbol_exposure_pct: 0.10
+  CRYPTO:
+    max_total_exposure_pct: 0.05
+    max_symbol_exposure_pct: 0.02
+
+EXECUTION_AUTHORITY:
+  IBKR: [EQUITY, FX, METAL]
+  NONE: [CRYPTO, INDEX]

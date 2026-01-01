@@ -20,6 +20,8 @@ class Tick:
     size: float
     exchange_ts: float  # Epoch seconds from exchange
     recv_ts: float      # Local receive time
+    source: str = "UNKNOWN"
+    asset_class: str = "UNKNOWN"
 
 @dataclass
 class Candle:
@@ -32,6 +34,8 @@ class Candle:
     close: float
     volume: float
     is_final: bool = False
+    source: str = "UNKNOWN"
+    asset_class: str = "UNKNOWN"
 
 class BarCloseEventBus:
     """Isolated event bus for bar close triggers."""
@@ -84,13 +88,17 @@ class CandleAggregator:
         interval_sec: int = 60, 
         session_mgr: Optional[SessionManager] = None,
         event_bus: Optional[BarCloseEventBus] = None,
-        db_mgr: Optional[Any] = None
+        db_mgr: Optional[Any] = None,
+        source: str = "UNKNOWN",
+        asset_class: str = "UNKNOWN"
     ):
         self.symbol = symbol
         self.interval_sec = interval_sec
         self.session_mgr = session_mgr or SessionManager()
         self.event_bus = event_bus or BarCloseEventBus()
         self.db_mgr = db_mgr
+        self.source = source
+        self.asset_class = asset_class
         
         self.current_candle: Optional[Candle] = None
         self.last_finalized_ts: float = 0
@@ -145,7 +153,9 @@ class CandleAggregator:
                 high=tick_raw.price,
                 low=tick_raw.price,
                 close=tick_raw.price,
-                volume=tick_raw.size
+                volume=tick_raw.size,
+                source=self.source,
+                asset_class=self.asset_class
             )
         else:
             self.current_candle.high = max(self.current_candle.high, tick_raw.price)
@@ -165,17 +175,19 @@ class CandleAggregator:
             return
             
         try:
-            conn = self.db_mgr.connect()
-            conn.execute("""
-                INSERT INTO realtime_candles (symbol, timestamp, open, high, low, close, volume, is_final)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            sql = """
+                INSERT INTO realtime_candles (symbol, timestamp, open, high, low, close, volume, is_final, source, asset_class)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT (symbol, timestamp) DO UPDATE SET
                     high = EXCLUDED.high,
                     low = EXCLUDED.low,
                     close = EXCLUDED.close,
                     volume = EXCLUDED.volume,
-                    is_final = EXCLUDED.is_final
-            """, (
+                    is_final = EXCLUDED.is_final,
+                    source = EXCLUDED.source,
+                    asset_class = EXCLUDED.asset_class
+            """
+            params = (
                 candle.symbol,
                 datetime.fromtimestamp(candle.start_ts),
                 candle.open,
@@ -183,8 +195,11 @@ class CandleAggregator:
                 candle.low,
                 candle.close,
                 candle.volume,
-                candle.is_final
-            ))
+                candle.is_final,
+                candle.source,
+                candle.asset_class
+            )
+            self.db_mgr.execute(sql, params)
         except Exception as e:
             logger.error(f"Failed to broadcast candle to DB: {e}")
 

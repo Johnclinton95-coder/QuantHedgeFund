@@ -37,12 +37,12 @@ class GovernanceManager:
         strat_hash = self.generate_config_hash(config)
         ttl_expiry = datetime.now() + timedelta(days=ttl_days)
         
-        conn = self.db.connect()
-        conn.execute("""
+        sql = """
             INSERT OR REPLACE INTO strategy_audit_log 
             (strategy_hash, config_json, regime_snapshot, llm_reasoning, human_rationale, approved_by, stage, ttl_expiry, mlflow_run_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
+        """
+        params = (
             strat_hash, 
             json.dumps(config), 
             json.dumps(regime_snapshot), 
@@ -52,27 +52,29 @@ class GovernanceManager:
             stage, 
             ttl_expiry,
             mlflow_run_id
-        ))
+        )
+        self.db.execute(sql, params)
         
         logger.info(f"Strategy {strat_hash[:8]} logged in stage {stage} by {approved_by}")
         return strat_hash
 
     def get_active_strategy(self) -> Optional[Dict[str, Any]]:
         """Retrieve the currently active strategy (highest stage)."""
-        conn = self.db.connect()
-        result = conn.execute("""
+        sql = """
             SELECT config_json, strategy_hash, stage, ttl_expiry 
             FROM strategy_audit_log 
             WHERE stage IN ('CANARY', 'FULL') 
             AND ttl_expiry > CURRENT_TIMESTAMP
             ORDER BY approved_at DESC LIMIT 1
-        """).fetchone()
+        """
+        result_df = self.db.query(sql)
         
-        if result:
-            config = json.loads(result[0])
-            config["strategy_hash"] = result[1]
-            config["stage"] = result[2]
-            config["ttl_expiry"] = result[3]
+        if not result_df.is_empty():
+            row = result_df.row(0)
+            config = json.loads(row[0])
+            config["strategy_hash"] = row[1]
+            config["stage"] = row[2]
+            config["ttl_expiry"] = row[3]
             return config
         return None
 
@@ -82,12 +84,12 @@ class GovernanceManager:
         if next_stage not in valid_stages:
             raise ValueError(f"Invalid stage: {next_stage}")
             
-        conn = self.db.connect()
-        conn.execute("""
+        sql = """
             UPDATE strategy_audit_log 
             SET stage = ?, approved_by = ?, approved_at = CURRENT_TIMESTAMP
             WHERE strategy_hash = ?
-        """, (next_stage, approved_by, strat_hash))
+        """
+        self.db.execute(sql, (next_stage, approved_by, strat_hash))
         
         logger.info(f"Strategy {strat_hash[:8]} promoted to {next_stage} by {approved_by}")
 
@@ -98,11 +100,11 @@ class GovernanceManager:
         if drift_score > 0.5: status = "RED"
         elif drift_score > 0.2: status = "YELLOW"
         
-        conn = self.db.connect()
-        conn.execute("""
+        sql = """
             INSERT INTO strategy_drift_logs (strategy_hash, metric_name, expected_value, actual_value, drift_score, status)
             VALUES (?, ?, ?, ?, ?, ?)
-        """, (strat_hash, metric, expected, actual, drift_score, status))
+        """
+        self.db.execute(sql, (strat_hash, metric, expected, actual, drift_score, status))
         
         if status == "RED":
             logger.error(f"CRITICAL DRIFT: Strategy {strat_hash[:8]} {metric} has drift score {drift_score:.2f}")

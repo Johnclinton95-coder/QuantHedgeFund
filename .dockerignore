@@ -1,0 +1,87 @@
+# ============================================
+# Quant Hedge Fund - Docker Ignore
+# ============================================
+
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Data and logs (use volumes instead)
+data/
+logs/
+*.duckdb
+*.parquet
+
+# MLflow artifacts (use volumes instead)
+mlruns/
+mlartifacts/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+
+# Documentation
+docs/_build/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Cache
+.cache/
+*.cache
+
+# Secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.log

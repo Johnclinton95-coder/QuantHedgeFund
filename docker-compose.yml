@@ -1,0 +1,77 @@
+# ============================================
+# Quant Hedge Fund - Docker Compose
+# ============================================
+# Multi-service deployment for local development
+
+version: '3.8'
+
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: qhf-dashboard
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./.env:/app/.env:ro
+    environment:
+      - PYTHONPATH=/app
+      - DUCKDB_PATH=/app/data/quant.duckdb
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.9.0
+    container_name: qhf-mlflow
+    ports:
+      - "5050:5000"
+    volumes:
+      - ./mlruns:/mlflow/mlruns
+      - ./mlartifacts:/mlflow/mlartifacts
+    command: >
+      mlflow server
+      --backend-store-uri sqlite:///mlflow/mlruns/mlflow.db
+      --default-artifact-root /mlflow/mlartifacts
+      --host 0.0.0.0
+      --port 5000
+    restart: unless-stopped
+
+  prefect:
+    image: prefecthq/prefect:2-python3.11
+    container_name: qhf-prefect
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./automation:/app/automation
+      - ./data:/app/data
+    command: prefect server start --host 0.0.0.0
+    restart: unless-stopped
+
+  # Optional: Luigi scheduler for development
+  luigi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: qhf-luigi
+    ports:
+      - "8082:8082"
+    command: luigid --port 8082
+    restart: unless-stopped
+    profiles:
+      - development
+
+volumes:
+  mlruns:
+  mlartifacts:
+
+networks:
+  default:
+    name: qhf-network

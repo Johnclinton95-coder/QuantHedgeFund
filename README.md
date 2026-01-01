@@ -82,7 +82,7 @@ Unlike simple trading bots, this is a **full quant infrastructure**:
 
 The financial markets in 2025 demand a new level of sophistication:
 
-- **AI-Driven Markets** - Institutional players now use advanced ML models. This system levels the playing field with XGBoost integration and MLflow experiment tracking.
+- **AI-Driven Markets** - Institutional players now use advanced ML models. This system levels the playing field with **AI Agent integration (Grok/Llama 3)**, XGBoost, and MLflow experiment tracking.
 
 - **High-Frequency Data** - Markets move faster than ever. DuckDB handles 900M+ rows efficiently, enabling analysis that would crash traditional tools.
 
@@ -257,6 +257,7 @@ flowchart LR
 | **Authentication** | Password-protected access (configurable) |
 | **Light/Dark Theme** | Toggle between dark mode and light mode with sun/moon button |
 | **Market Profile** | Volume profile chart with configurable lookback periods |
+| **AI Insight Engine** | **New**: Real-time Grok-powered market analysis (Summary, Regime, Risk, Levels) |
 | **Governance Audit** | Immutable audit trail for strategy approvals |
 | **Drift Monitoring** | Track strategy performance drift in real-time |
 | **Ops Reporting** | Generate daily operational reports |
@@ -269,6 +270,15 @@ flowchart LR
 | **Mock Feed** | Simulated data feed for testing without API keys |
 | **Candle Aggregator** | Tick-to-candle conversion with 1-minute bars |
 | **Truth Layer** | Deterministic bar-close synchronization |
+
+### AI Insight Layer (Omega AI)
+| Feature | Description |
+|---------|-------------|
+| **AI Agent** | Powered by **Grok (Llama 3 70B)** via `groq` client |
+| **Market Summary** | Natural language commentary on price action and momentum |
+| **Regime Detection** | Classifies market state (Trend, Range, Breakout, Volatility) |
+| **Risk Guardrail** | Pre-trade risk assessment based on spread, liquidity, and vol |
+| **Trade Levels** | Automated Stop-Loss and Take-Profit suggestions based on ATR/VWAP |
 
 ---
 
@@ -403,6 +413,7 @@ Example `.env` file:
 ```env
 # API Keys
 FMP_API_KEY=your_fmp_api_key_here
+GROK_API_KEY=your_grok_api_key_here # Required for AI features
 
 # Database
 DUCKDB_PATH=data/quantdb.duckdb

@@ -1,0 +1,52 @@
+# Quant Hedge Fund - Asset Registry
+# This file defines the behavior for all symbols in the system.
+
+ASSETS:
+  # --- US Equities (Tech / Mag 7 / Growth) ---
+  AAPL: { asset_class: EQUITY, realtime_feed: IBKR, execution: IBKR }
+  MSFT: { asset_class: EQUITY, realtime_feed: IBKR, execution: IBKR }
+  GOOGL: { asset_class: EQUITY, realtime_feed: IBKR, execution: IBKR }
+  AMZN: { asset_class: EQUITY, realtime_feed: IBKR, execution: IBKR }
+  TSLA: { asset_class: EQUITY, realtime_feed: IBKR, execution: IBKR }
+  NVDA: { asset_class: EQUITY, realtime_feed: IBKR, execution: IBKR }
+  META: { asset_class: EQUITY, realtime_feed: IBKR, execution: IBKR }
+  NFLX: { asset_class: EQUITY, realtime_feed: IBKR, execution: IBKR }
+  AMD:  { asset_class: EQUITY, realtime_feed: IBKR, execution: IBKR }
+  INTC: { asset_class: EQUITY, realtime_feed: IBKR, execution: IBKR }
+
+  # --- US Equities (Blue Chip / Finance / Retail) ---
+  JPM:  { asset_class: EQUITY, realtime_feed: IBKR, execution: IBKR }
+  V:    { asset_class: EQUITY, realtime_feed: IBKR, execution: IBKR }
+  WMT:  { asset_class: EQUITY, realtime_feed: IBKR, execution: IBKR }
+  PG:   { asset_class: EQUITY, realtime_feed: IBKR, execution: IBKR }
+  JNJ:  { asset_class: EQUITY, realtime_feed: IBKR, execution: IBKR }
+
+  # --- Metals (Twelve Data Coverage) ---
+  XAU/USD: { asset_class: METAL, realtime_feed: TWELVE_DATA, execution: IBKR } # Gold
+  XAG/USD: { asset_class: METAL, realtime_feed: TWELVE_DATA, execution: IBKR } # Silver
+  XPT/USD: { asset_class: METAL, realtime_feed: TWELVE_DATA, execution: IBKR } # Platinum
+  XPD/USD: { asset_class: METAL, realtime_feed: TWELVE_DATA, execution: IBKR } # Palladium
+
+  # --- Forex (G10 Majors) ---
+  EUR/USD: { asset_class: FX, realtime_feed: TWELVE_DATA, execution: IBKR }
+  GBP/USD: { asset_class: FX, realtime_feed: TWELVE_DATA, execution: IBKR }
+  USD/JPY: { asset_class: FX, realtime_feed: TWELVE_DATA, execution: IBKR }
+  USD/CHF: { asset_class: FX, realtime_feed: TWELVE_DATA, execution: IBKR }
+  AUD/USD: { asset_class: FX, realtime_feed: TWELVE_DATA, execution: IBKR }
+  USD/CAD: { asset_class: FX, realtime_feed: TWELVE_DATA, execution: IBKR }
+  NZD/USD: { asset_class: FX, realtime_feed: TWELVE_DATA, execution: IBKR }
+
+  # --- Crypto (Twelve Data View-Only) ---
+  BTC/USD: { asset_class: CRYPTO, realtime_feed: TWELVE_DATA, execution: NONE }
+  ETH/USD: { asset_class: CRYPTO, realtime_feed: TWELVE_DATA, execution: NONE }
+  SOL/USD: { asset_class: CRYPTO, realtime_feed: TWELVE_DATA, execution: NONE }
+  XRP/USD: { asset_class: CRYPTO, realtime_feed: TWELVE_DATA, execution: NONE }
+  ADA/USD: { asset_class: CRYPTO, realtime_feed: TWELVE_DATA, execution: NONE }
+  DOGE/USD: { asset_class: CRYPTO, realtime_feed: TWELVE_DATA, execution: NONE }
+  DOT/USD: { asset_class: CRYPTO, realtime_feed: TWELVE_DATA, execution: NONE }
+  LINK/USD: { asset_class: CRYPTO, realtime_feed: TWELVE_DATA, execution: NONE }
+
+  # --- Indices ---
+  SPX: { asset_class: INDEX, realtime_feed: TWELVE_DATA, execution: NONE }
+  NDX: { asset_class: INDEX, realtime_feed: TWELVE_DATA, execution: NONE }
+  DJI: { asset_class: INDEX, realtime_feed: TWELVE_DATA, execution: NONE }

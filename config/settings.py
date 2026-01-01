@@ -84,6 +84,10 @@ class Settings(BaseSettings):
         default=Path("./data/outputs"),
         description="Dashboard data directory"
     )
+    dashboard_password: str = Field(
+        default="quant123",
+        description="Dashboard login password (change in production!)"
+    )
     
     # ===================
     # OpenAI Settings

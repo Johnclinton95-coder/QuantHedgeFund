@@ -14,6 +14,7 @@ import time
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from omega.trading_app import TradingApp
+from config.registry import get_registry
 from loguru import logger
 
 def main():
@@ -28,7 +29,14 @@ def main():
         sys.exit(1)
         
     # 3. Subscribe to Data (The Fix for Dashboard)
-    symbols = ["AMZN", "AAPL", "MSFT", "GOOGL", "TSLA"]
+    registry = get_registry()
+    symbols = [s for s, cfg in registry.assets.items() if cfg.get("realtime_feed") == "IBKR"]
+    
+    if not symbols:
+        # Fallback to mocks if no IBKR symbols in registry
+        symbols = ["AMZN", "AAPL", "MSFT", "GOOGL", "TSLA"]
+        logger.warning(f"No IBKR assets in registry. Falling back to dev list: {symbols}")
+
     logger.info(f"Subscribing to Truth Layer for: {symbols}")
     
     for symbol in symbols:
