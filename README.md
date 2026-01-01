@@ -17,7 +17,8 @@
 
 
 <img width="1918" height="1065" alt="image" src="https://github.com/user-attachments/assets/fc2990a4-3c75-44a4-95f4-f5f08e8e7923" />
-<img width="1915" height="1079" alt="image" src="https://github.com/user-attachments/assets/8b9562fa-12e8-4c9b-96b8-4296502135b8" />
+<img width="1919" height="1069" alt="image" src="https://github.com/user-attachments/assets/eedd29d3-3096-44c3-b571-6517f9c1a9ee" />
+
 
 
 
@@ -973,6 +974,7 @@ Algorithmic trading involves substantial risk of loss. You could lose some or al
 Proprietary - All Rights Reserved
 
 ---
+
 
 
 
